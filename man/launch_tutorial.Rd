@@ -10,7 +10,7 @@ launch_tutorial()
 Launches app
 }
 \description{
-Invoking this function will launch the app;
+Invoking this function will launch the Tutorial App;
 The app includes a ReadMe introduction which provides a quick overview on how to use the app
 }
 \examples{

@@ -1,7 +1,9 @@
-81d1053a5f92ecdea98e1307a3528aaa *DESCRIPTION
-9b93a65cb00dd3c90dd1f192696ce657 *NAMESPACE
+b5ec22ebfe53e441a3a5118cd15f0dae *DESCRIPTION
+a2a2a97f4f34b0d3cf0339bc101db039 *NAMESPACE
 859b28a3f8f3e7e7698e9a1e74104caa *R/InternalFunc.R
-e5557151c089dbf988e65b3ef67bdc93 *R/sysdata.rda
-4f5895e3d52c6e72f0917bb5450b090c *R/tut_code.R
-94d5258c49c95573f4887f5f0fe4a497 *man/launch_tutorial.Rd
+bdc88097b8647106f68bfa635be6b336 *R/launch_plotter.R
+be6c7691c537d569e87ef3929a2c85ab *R/sysdata.rda
+397ec9d50f90098a3576828984f91df5 *R/tut_code.R
+ba1a81864923ce6e8da6978de7404e15 *man/launch_plotter.Rd
+66620e11196a957cdbc4b817d23ccdff *man/launch_tutorial.Rd
 6f442241e01c3e606ac8569abf5f2e5f *man/show_tutorial_datasets.Rd

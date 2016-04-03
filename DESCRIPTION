@@ -1,21 +1,24 @@
 Package: RtutoR
 Type: Package
 Title: Tutorial App for Learning R
-Version: 0.1
+Version: 0.2
 Date: 2016-03-04
 Author: Anup Nair [aut, cre]
 Maintainer: Anup Nair <nairanup50695@gmail.com>
-Description: Contains functions for launching Tutorial Apps, which covers different
-    aspects of the R programming language. This first version includes a "R Basics" app,
-    which provides a set of most commonly performed data manipulation tasks in R. The
+Description: Contains functions for launching R Tutorial & Plotting Apps. The R Tutorial app
+    provides a set of most commonly performed data manipulation tasks in R. The
     app structures the contents into different topics and provides an interactive & dynamic interface
     for navigation.
+    The plotting app provides an automated interface for generating plots using the ggplot2 package.
+    Current version of this app supports 10 different plot types along with options to manipulate specific
+    aesthetics and controls related to each plot type.
 Depends: R (>= 3.1.0)
 License: GPL
-Imports: dplyr, ggplot2, shiny, shinydashboard, rmarkdown, DT
+Imports: dplyr, ggplot2, shiny, shinydashboard, rmarkdown, DT, shinyBS,
+        shinyjs, ggthemes, plotly
 LazyData: TRUE
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-03-12 08:22:26 UTC; anup.a.nair
+Packaged: 2016-04-03 05:23:54 UTC; anup.a.nair
 Repository: CRAN
-Date/Publication: 2016-03-12 16:15:44
+Date/Publication: 2016-04-03 17:00:14

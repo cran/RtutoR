@@ -1,6 +1,6 @@
 
 #' @title Launch Tutorial App
-#' @description Invoking this function will launch the app;
+#' @description Invoking this function will launch the Tutorial App;
 #' The app includes a ReadMe introduction which provides a quick overview on how to use the app
 #' @return Launches app
 #' @import dplyr shinydashboard ggplot2 rmarkdown shiny
@@ -17,6 +17,7 @@ launch_tutorial <- function() {
   tutorial_set <- list(basic_operations = basic_operations,dplyr_tutorial = dplyr_tutorial,
                        loops_tutorial = loops_tutorial,model_tutorial = model_tutorial)
   diamonds <- ggplot2::diamonds
+  diamonds <- diamonds[sample(1:nrow(diamonds),size=1000),]
 
   marks <- data.frame(replicate(5,round(runif(100,0,100))))
   colnames(marks) <- paste("Subject", seq(1,5,1), sep="")
@@ -161,7 +162,3 @@ show_tutorial_datasets <- function() {
   tutorial_set
 
 }
-
-
-
-
