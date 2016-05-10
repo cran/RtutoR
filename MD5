@@ -1,8 +1,11 @@
-b5ec22ebfe53e441a3a5118cd15f0dae *DESCRIPTION
+51bc3bf3b8629b29f6b133cae752405e *DESCRIPTION
 a2a2a97f4f34b0d3cf0339bc101db039 *NAMESPACE
+1e7605c383620fed6ea2b6199c6c5ed5 *R/Aesthetic_Tab_Functions.R
 859b28a3f8f3e7e7698e9a1e74104caa *R/InternalFunc.R
-bdc88097b8647106f68bfa635be6b336 *R/launch_plotter.R
-be6c7691c537d569e87ef3929a2c85ab *R/sysdata.rda
+0ff7a3bced6b4b8b1494632bc608a712 *R/Other_controls_tab_funcs.R
+1d4a38a1eb9f3e0d7061ced48c2693cc *R/Var_plot_generate_functions.R
+ccf47c57eea23d5ff0279f8fa96b61a5 *R/launch_plotter.R
+0d7047c843d021fa9aeb07e52d907c1c *R/sysdata.rda
 397ec9d50f90098a3576828984f91df5 *R/tut_code.R
 ba1a81864923ce6e8da6978de7404e15 *man/launch_plotter.Rd
 66620e11196a957cdbc4b817d23ccdff *man/launch_tutorial.Rd
