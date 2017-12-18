@@ -20,4 +20,3 @@ Launches the plotting app
 diamonds_sample <- ggplot2::diamonds[sample(1:nrow(diamonds),size=1000),]
 launch_plotter(list(diamonds_sample = diamonds_sample, mtcars = mtcars, iris = iris))}
 }
-

@@ -5,6 +5,8 @@
 #' @param list_of_datasets List of datasets which should be made available for selection when the app is launched
 #' @return Launches App
 #' @import dplyr shinydashboard ggplot2 shiny
+#' @importFrom colourpicker updateColourInput colourInput
+#' @importFrom devtools load_all
 #' @examples
 #' \dontrun{
 #' diamonds_sample <- ggplot2::diamonds[sample(1:nrow(diamonds),size=1000),]
@@ -13,108 +15,33 @@
 
 launch_plotter <- function(list_of_datasets) {
 
-#   devtools::use_data(aesthetics=aesthetics,basic_operations=basic_operations,dplyr_tutorial=dplyr_tutorial,loops_tutorial=loops_tutorial,
-#                      model_tutorial=model_tutorial, readme_file=readme_file, readme_file_plotter=readme_file_plotter,themes=themes,all_plots=all_plots, col_palette=col_palette, overwrite=T,internal=T)
-#
 
-  #### Display reccomended plot lists #####
+  # devtools::use_data(aesthetics=aesthetics,basic_operations=basic_operations,dplyr_tutorial=dplyr_tutorial,loops_tutorial=loops_tutorial,
+  #                    model_tutorial=model_tutorial, readme_file=readme_file, readme_file_plotter=readme_file_plotter,themes=themes,all_plots=all_plots, col_palette=col_palette, overwrite=T,internal=T)
+  #
+
+
+  # Load UI file
+  devtools::load_all()
 
   Type <- Aes <- Widget <- Palette <- NULL
   g <- ggplot(aesthetics) + geom_bar(aes(Type)) + ggthemes::theme_hc()
 
-  shinyApp(ui <- dashboardPage(
-    dashboardHeader(title = "Plotter"),
-    dashboardSidebar(
-      sidebarMenu(
-        menuItem("Read Me", tabName = "readme", icon = icon("dashboard")),
-        menuItem("Build a Plot", tabName = "datasets", icon = icon("dashboard")),
-        menuItem("Plot Zoom View", tabName = "plot_zoom", icon = icon("dashboard"))
-
-      )
-    ),
-    dashboardBody(
-      shinyjs::useShinyjs(),
-
-      tabItems(
-        # Dataset Tab
-        tabItem(tabName = "datasets",
-
-                fluidRow(
-                  tabBox(title = "", width = 6,
-                         tabPanel("Select data",
-                                  uiOutput("choose_dataset")
-                         ),
-
-
-                         tabPanel("Variables & Geom type",
-                                  sliderInput("add_layers","Add additional layer",min=1,max=3,step=1,value=1),
-
-                                  uiOutput("select_var"),
-                                  uiOutput("select_plot"),
-                                  uiOutput("show_all_plots")
-
-
-                         ),
-                         tabPanel("Set Aesthetics",
-
-                                  uiOutput("show_aesthetics_control"),
-                                  uiOutput("map_aesthetic_to_var"),
-                                  uiOutput("manual_aesthetic_control"),
-                                  uiOutput("reset_buttons")
-
-                         ),
-
-                         tabPanel("Other Plot Controls",
-
-                              uiOutput("collapsible_panel"),
-                              shinyBS::bsButton("reset_collapse_panel","Reset All", style = "primary")
-                         )
-
-                         ),
-
-                  box(title = "Plot Output", status = "primary", solidHeader = T, width = 6,
-
-                      conditionalPanel(
-                        condition = "input.switch_interactivity == false",
-                        plotOutput("plot_output")
-                      ),
-                      conditionalPanel(
-                        condition = "input.switch_interactivity == true",
-                        plotly::plotlyOutput("interactive_plot_output")
-                      ),
-                      checkboxInput("switch_interactivity","Switch ON Interactivity", value = F),
-                      h4(strong("Underlying Code"),style="color:brown"),
-                      textOutput("plot_code")
-                  )
-                )
-
-        ),
-        tabItem(tabName = "readme",
-                fluidRow(
-                  box(title = "Read Me", status = "primary", solidHeader = T, width = 12,
-                      htmlOutput("read_me")))),
-        tabItem(tabName = "plot_zoom",
-                fluidRow(
-                  box(title = "Plot (Enlarged View)", status = "primary", solidHeader = T, width = 12, height = 700,
-                      plotOutput("plot_out_zoom"))))
-      ))),
-
-
+  shinyApp(
+    ui <- appUI,
     server <- function(input, output, session) {
 
 
       #### Read Me ####################
       output$read_me <- reactive({
 
-
-        val <- as.character(readme_file_plotter[1,1])
-        gen_markdown(val)
+        includeMarkdown("./R/ReadMe_Plotter.rmd")
 
       })
 
 
 
-      #### Tab 1 - Choose a dataset from the dropdown ####################
+      # Tab 1 - Choose a dataset from the dropdown
 
       output$choose_dataset <- renderUI({
 
@@ -123,7 +50,7 @@ launch_plotter <- function(list_of_datasets) {
       })
 
 
-      #### Display variables from the selected dataset ################
+      # Display variables from the selected dataset
 
       output$select_var <- renderUI({
 
@@ -131,7 +58,7 @@ launch_plotter <- function(list_of_datasets) {
 
       })
 
-      ######### Generate Plot dropdown #################
+      # Generate Plot dropdown
 
       output$show_all_plots <- renderUI({
 
@@ -144,7 +71,7 @@ launch_plotter <- function(list_of_datasets) {
 
 
 
-      ####### Show recommended plots basis selected variables ##########
+      # Show recommended plots basis selected variables
 
       output$select_plot <- renderUI({
 
@@ -162,7 +89,7 @@ launch_plotter <- function(list_of_datasets) {
       })
 
 
-      #### Toggle button - Hide/Show aesthetic controls ############
+      # Toggle button - Hide/Show aesthetic controls
 
       output$show_aesthetics_control <- renderUI({
 
@@ -173,7 +100,7 @@ launch_plotter <- function(list_of_datasets) {
         })
       })
 
-      #### Dynamically generate aesthetic controls (Aesthetic mapped to variable) ######
+      # Dynamically generate aesthetic controls (Aesthetic mapped to variable)
 
       output$map_aesthetic_to_var <- renderUI({
 
@@ -189,7 +116,7 @@ launch_plotter <- function(list_of_datasets) {
         })
       })
 
-      #### Dynamically generate Manual aesthetic Controls ####
+      # Dynamically generate Manual aesthetic Controls
 
       output$manual_aesthetic_control <- renderUI({
 
@@ -234,7 +161,7 @@ launch_plotter <- function(list_of_datasets) {
         })
       })
 
-      ############ Generate reset buttons #################
+      # Generate reset buttons
 
       output$reset_buttons <- renderUI({
 
@@ -245,7 +172,7 @@ launch_plotter <- function(list_of_datasets) {
         })
       })
 
-      ############## Reset all values when button is clicked ######
+      # Reset all values when button is clicked
 
       observe({
 
@@ -260,7 +187,7 @@ launch_plotter <- function(list_of_datasets) {
         })
       })
 
-      ############ Reset color picker ####################
+      # Reset color picker
 
             observe({
 
@@ -273,7 +200,7 @@ launch_plotter <- function(list_of_datasets) {
                   lapply(1:length(applicable_aes), function(j) {
 
 
-                    shinyjs::updateColourInput(session,inputId = paste("manual_adjustment",i,j,sep=""), value = "#FFFFFF")
+                    colourpicker::updateColourInput(session,inputId = paste("manual_adjustment",i,j,sep=""), value = "#FFFFFF")
                   })
 
                 })
@@ -282,7 +209,7 @@ launch_plotter <- function(list_of_datasets) {
 
             })
 
-      ############ Show/Hide Aesthetic Controls ############
+      # Show/Hide Aesthetic Controls
 
       observe({
 
@@ -310,7 +237,7 @@ launch_plotter <- function(list_of_datasets) {
 
       })
 
-      ########### Generate Collapsable Panel ##############
+      # Generate Collapsable Panel
 
       output$collapsible_panel <- renderUI({
 
@@ -333,8 +260,8 @@ launch_plotter <- function(list_of_datasets) {
                                          , style = "success"),
                          shinyBS::bsCollapsePanel("Color Palettes (Contnuous Variables)",
                                          checkboxInput("revert_default","Revert to default?",value = F),
-                                         shinyjs::colourInput("low_color", "Select low color", value="white"),
-                                         shinyjs::colourInput("high_color", "Select high color", value="white")
+                                         colourpicker::colourInput("low_color", "Select low color", value="white"),
+                                         colourpicker::colourInput("high_color", "Select high color", value="white")
                                          , style = "success"))
           )
 
@@ -345,7 +272,7 @@ launch_plotter <- function(list_of_datasets) {
       })
 
 
-      ########## Facetting ###############################
+      # Facetting
 
       output$facetting_var <- renderUI({
 
@@ -357,7 +284,7 @@ launch_plotter <- function(list_of_datasets) {
 
       })
 
-      ########### Color palette #####################
+      # Color palette
 
       output$col_palette <- renderUI({
 
@@ -366,7 +293,7 @@ launch_plotter <- function(list_of_datasets) {
 
       })
 
-      ########### Axis controls #####################
+      # Axis controls
 
       output$axis_controls <- renderUI({
 
@@ -379,7 +306,7 @@ launch_plotter <- function(list_of_datasets) {
       })
 
 
-      ######## Construct Plot ###############
+      # Construct Plot
 
       genPlot <- reactive({
 
@@ -481,7 +408,7 @@ launch_plotter <- function(list_of_datasets) {
         })
 
 
-      #### Add theme to plot ################
+      # Add theme to plot
 
       plot_with_themes <- reactive({
 
@@ -496,7 +423,7 @@ launch_plotter <- function(list_of_datasets) {
         }
 
 
-        ### Add Title #############
+        # Add Title
 
         if(!is.null(input$add_title)) {
           if (input$add_title != "") {
@@ -505,7 +432,7 @@ launch_plotter <- function(list_of_datasets) {
           }
         }
 
-        ##### Add facet ###############
+        # Add facet
 
         if (!(is.null(input$facet_var))) {
           if(input$facet_var != "") {
@@ -514,7 +441,7 @@ launch_plotter <- function(list_of_datasets) {
           else { plot_template = plot_template}
         }
 
-       ####### Color palette - Discreete ############
+       # Color palette - Discreete
 
         if (!(is.null(input$color_palette))) {
           if(input$color_palette != "") {
@@ -528,7 +455,7 @@ launch_plotter <- function(list_of_datasets) {
           else { plot_template = plot_template}
         }
 
-      ########## Color palette - Continuous #############
+      # Color palette - Continuous
 
         if (!is.null(input$low_color)) {
           if(input$low_color != '#FFFFFF' & input$revert_default != T) {
@@ -540,7 +467,7 @@ launch_plotter <- function(list_of_datasets) {
 
         }
 
-      ############### Axis Range ############################
+      # Axis Range
 
         observeEvent(input$y_slider,{
 
@@ -579,7 +506,7 @@ launch_plotter <- function(list_of_datasets) {
 
       })
 
-      ######## Generate Plot (static) #####
+      # Generate Plot (static)
 
       output$plot_output <- renderPlot({
 
@@ -593,7 +520,7 @@ launch_plotter <- function(list_of_datasets) {
       })
 
 
-      ########## Generate Plot (Interactive) ####
+      # Generate Plot (Interactive)
 
       output$interactive_plot_output <- plotly::renderPlotly({
 
@@ -604,7 +531,7 @@ launch_plotter <- function(list_of_datasets) {
       })
 
 
-      ########## Display the underlying code ###########
+      # Display the underlying code
 
       output$plot_code <- renderText({
 
@@ -621,7 +548,7 @@ launch_plotter <- function(list_of_datasets) {
 
       })
 
-      ########### Display the enlarged plot view #########
+      # Display the enlarged plot view
 
       output$plot_out_zoom <- renderPlot({
         plot_template <- plot_with_themes()
