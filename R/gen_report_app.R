@@ -15,14 +15,16 @@
 
 gen_exploratory_report_app <- function(df) {
 
+  plot_counter <- NULL
+
   output_obj_name <- list()
   shinyApp(
     ui <- dashboardPage(
-      dashboardHeader(title = "Plotter"),
+      dashboardHeader(title = "Report Generator"),
       dashboardSidebar(
         sidebarMenu(
           menuItem("Read Me", tabName = "readme", icon = icon("dashboard")),
-          menuItem("Build a Plot", tabName = "datasets", icon = icon("dashboard"))
+          menuItem("Generate Report", tabName = "datasets", icon = icon("dashboard"))
         )
       ),
       dashboardBody(
@@ -47,15 +49,15 @@ gen_exploratory_report_app <- function(df) {
                                     ),
                                     textInput("file_name","Enter the output file name (e.g res.pptx)"),
                                     numericInput("max_levels_cat_variable","Exclude categorical features with no. of levels greater than",value = 10),
+                                    uiOutput("grouping_var"),
                                     shinyBS::bsButton("gen_report","Generate Report", style = "primary")
                            )
                     ),
 
                     box(title = "Plot Output", status = "primary", solidHeader = T, width = 6,
-
+                        uiOutput("plot_category_selector"),
                         uiOutput("plot_selector"),
-                        plotly::plotlyOutput("plot_out"),
-                        shinyBS::bsButton("next_plot","Next Plot", style = "primary")
+                        plotly::plotlyOutput("plot_out")
                     )
                   )
 
@@ -80,7 +82,7 @@ gen_exploratory_report_app <- function(df) {
       #### Read Me ####################
       output$read_me <- reactive({
 
-        includeMarkdown("./R/ReadMe_ppt_app.rmd")
+        includeMarkdown(system.file("ReadMe_ppt_app.rmd", package = "RtutoR"))
 
       })
 
@@ -91,27 +93,64 @@ gen_exploratory_report_app <- function(df) {
         )
       })
 
+      output$grouping_var <- renderUI({
+        validate(
+          need(input$target_var != "", "")
+        )
+
+        if (input$target_var != "") {
+          vars <- colnames(df)
+
+          # show only categorical features
+          # Change character to factors
+          df[,which(sapply(df,class) == "character")] = lapply(df[,which(sapply(df,class) == "character"),drop=F], as.factor)
+
+          # remove variables with more than specified no. of levels
+          df = df[,sapply(df, function(x) length(levels(x))) <= input$max_levels_cat_variable]
+          data_type <- sapply(df,class)
+          data_type = data_type[-which(names(data_type) == input$target_var)]
+          categorical_features <- names(data_type)[sapply(data_type,function(x) any(x %in% c("factor","character","logical")))]
+
+          selectInput(
+            inputId = "group_var","Select Grouping Variable",choices = c("No Grouping Variable",categorical_features),multiple = TRUE, selected = "No Grouping Variable"
+          )
+        }
+
+      })
+
 
       generate_report <- reactive({
 
         withProgress(message = 'Making plot',{
           target_var <- input$target_var
-          if(input$top_n_option == "Yes") {
+          if(input$top_n_option  == "Yes") {
+            if(input$group_var == "No Grouping Variable"){
+              group_names = NULL
+            } else {
+              group_names <- as.character(input$group_var)
+            }
             output_obj_name <<- generate_exploratory_analysis_ppt(df, target_var = target_var,
                                                                   output_file_name = input$file_name,
                                                                   plot_theme = input$select_theme,
                                                                   n_plots_per_slide = input$n_plots,
                                                                   top_k_features = input$top_n_value,
                                                                   f_screen_model = input$feature_selector,
-                                                                  max_levels_cat_var = input$max_levels_cat_variable
+                                                                  max_levels_cat_var = input$max_levels_cat_variable,
+                                                                  group_names = group_names
                                                                   )
 
           } else {
+            if(input$group_var == "No Grouping Variable"){
+              group_names = NULL
+            } else {
+              group_names <- as.character(input$group_var)
+            }
             output_obj_name <<- generate_exploratory_analysis_ppt(df, target_var = target_var,
                                                                   output_file_name = input$file_name,
                                                                   plot_theme = input$select_theme,
                                                                   n_plots_per_slide = input$n_plots,
-                                                                  max_levels_cat_var = input$max_levels_cat_variable
+                                                                  max_levels_cat_var = input$max_levels_cat_variable,
+                                                                  group_names = group_names
                                                                   )
 
           }
@@ -125,34 +164,28 @@ gen_exploratory_report_app <- function(df) {
 
         generate_report()
 
+        output$plot_category_selector <- renderUI({
+          cat_names <- names(output_obj_name)
+          selectInput("plot_cat_names","Select Plot Category",cat_names)
+        })
+
+      })
+
+      observeEvent(input$plot_cat_names,{
         output$plot_selector <- renderUI({
-          plot_names <- names(output_obj_name$plots)
+          plot_names <- names(output_obj_name[[as.character(input$plot_cat_names)]][["plots"]])
           selectInput("plot_names","Select a Plot",plot_names)
         })
-
       })
 
-
-      observeEvent(input$next_plot,{
-
-        output$plot_out <- plotly::renderPlotly({
-          plots <- output_obj_name$plots
-          count <- input$next_plot %% length(plots)
-          if (count == 0) {
-            count = length(plots)
-          }
-          plotly::ggplotly(plots[[count + 1]])
-        })
-
-
-      })
 
       observeEvent(input$plot_names,{
 
+        plot_counter <<- 1
         output$plot_out <- plotly::renderPlotly({
-          sel_plot <- input$plot_names
-          plots <- output_obj_name$plots
-          plotly::ggplotly(plots[[sel_plot]])
+          sel_plot_name <- input$plot_names
+          sel_plot <- output_obj_name[[as.character(input$plot_cat_names)]][["plots"]][[sel_plot_name]]
+          plotly::ggplotly(sel_plot)
 
         })
 

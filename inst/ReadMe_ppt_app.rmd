@@ -1,0 +1,24 @@
+---
+title: "ReadMe_ppt_app"
+output: html_document
+---
+
+### **You can view a demo of this app [here](https://youtu.be/UMRBuXbRyag)**
+
+### App Usage
+
+The app can be used as follows:
+
+* The app is launched by invoking the `gen_exploratory_report_app(df)` function where `df`is the dataframe object to be analyzed
+* Choose the dependent variable from the `Select Target Variable` dropdown. The dropdown would contain all the column names from the dataframe object
+* You can change the plot theme by selecting an option from the `Select Theme` dropdown
+* The slide format can be changed as well. There are 2 possible options - 1 plot per slide or 2 plots per slide. Default value is 2. This can be changed by selecting a value from the `No. of plots per slide` dropdown
+* By default, the app would consider all the features available in the dataset for analysis. If an initial feature screening is required, set the `Select Top N features?` dropdown to Yes. This launches 2 additional controls - `No. of features to select` This takes a numeric input indicating the no. of features to select & `Select feature selector method` to select a filtering approach. 4 different filtering aproaches are provided (from the `FSelector` package)
+* Specify the Output report file name in the `Enter the Output file name` input field. If only the file name is specified, the report is saved in the current working directory.
+* You can also specify a grouping variable in the "Select Grouping Variable" input field. Currently, only categorical features can be selected as a Grouping variable. Selecting a Grouping variable (or multiple grouping variables) introduces an additional section to the Exploratory Analysis report - Bivariate Analysis with Grouping Variable.
+* Finally, to generate the report click on the `Generate Report` button - This will generate a presentation with the plots and summary tables.
+* The plots can be visualized interactively (using the plotly package). Once the report is generated, the 1st plot is displayed on the "Plot Output" box. 
+* You can navigate to a specific plot by selecting a "Plot Category" and a specific plot within that Category.The plots are named as follows:
+  * For Univariate analysis, plots as named as "Histogram - feature_name" for numeric features and "Bar Plot - feature_name" for categorical features 
+  * Bivaraite analysis plots are named as "Feature Name vs Target Variable"
+  * Bivaraite analysis (with Grouping variable, if grouping variable(s) is provided) is named as "Feature Name vs Target Variable group by Group Variable name"

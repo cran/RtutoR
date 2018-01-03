@@ -6,9 +6,9 @@
 \usage{
 generate_exploratory_analysis_ppt(df, target_var, output_file_name,
   n_plots_per_slide = 2, plot_theme = "ggthemes::theme_fivethirtyeight()",
-  top_k_features = NULL, f_screen_model = c("chi.squared",
-  "information.gain", "gain.ratio", "symmetrical.uncertainty"),
-  max_levels_cat_var = 10)
+  group_names = NULL, top_k_features = NULL,
+  f_screen_model = c("chi.squared", "information.gain", "gain.ratio",
+  "symmetrical.uncertainty"), max_levels_cat_var = 10)
 }
 \arguments{
 \item{df}{Dataframe object for exploratory analysis}
@@ -23,6 +23,10 @@ Default value is 2}
 
 \item{plot_theme}{Specify a theme for ggplot. Includes themes provided as part of ggplot2 as well as themes
 available in the ggthemes package. Launch the shiny app to view the valid set of themes available}
+
+\item{group_names}{Grouping variable (or multiple grouping variables) to be used for analysis.
+if this argument is supplied, an additional section is added to the Exploratory Analysis report:
+"Bi variate Analysis with Grouping variable".}
 
 \item{top_k_features}{Should top k features be selected for analysis instead of all available features
 in the dataset.If yes, provide a numeric value to this argument. The Top K features are identified based

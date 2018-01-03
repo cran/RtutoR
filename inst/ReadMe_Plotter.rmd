@@ -1,0 +1,32 @@
+---
+title: "Read Me file"
+output: html_document
+---
+
+## Plotting App for ggplot2
+
+### **You can view a demo of this app [here](https://www.youtube.com/watch?v=-YWX8LUft-o&t=22s) and [here](https://www.youtube.com/watch?v=xgZ4bpEZX4g&t=1s)**
+### Overview
+
+This app provides an automated interface for generating plots using the ggplot2 package. This first version of the app includes 10 different plot types along with options to manipulate specific aesthetics and controls related to each plot type
+(NOTE: `ggplot2` provides an extremely rich and extensive set of aesthetics and controls to manipulate each aspect of a particular plot. While the list of aesthetics and controls provided by the app is fairly comprehensive, its by no means exhaustive and does not cover all the various options that `ggplot2` provides. Secondly, this first version of the app includes only 10 different plot types while ggplot2 supports more than 35 different plots)
+
+### Launching the Plotter
+
+```{r eval=FALSE}
+launch_plotter(list(iris = iris, mtcars = mtcars))
+```
+
+### Usage
+
+The app can be used as follows:
+
+* The app is launched by invoking the `launch_plotter(list_of_datasets)` function. `list of datasets` should include the datasets that should be made available for selection by the app. If this argument is left blank, by default the `iris` and `mtcars` dataset is made availble for selection
+* Select a dataset from the `Select Data` tab (in case of multiple datasets being passed while paunching the app)
+* Each dataset should have valid column names that can be selected (as x and y variables) for generating a plot. This can be selected from the `Variable & Geom type` tab. Multiple layers can also be added to the plot by adjusting the `Add additional layers` slider
+* Depending on the variable type, a set of recommended plots is displayed under the plot selector dropdown (For example, if both x & y variables are numeric, plot types such as `geom_point`, `geom_smooth` etc is displayed). However, the entire set of 10 available plot types can be displayed by clicking on the **Show all plots** button
+* `Set aesthetics` tab provides option to manipulate plot specific aesthetics and controls. Aesthetics can be manipulated either directly or by mapping an aesthetic to a variable. Both options are supported by the app
+* Plots can be made interactive by clicking on the `Switch ON interactivity` button (and this can be turned off by clicking on the button again). Interactive plots are generated using the `plotly` package
+* Finally, the `Other Plot Controls` tab provides other options and controls such as Changing plot themes, Color palettes etc.
+
+
