@@ -18,7 +18,7 @@
 #' @param f_screen_model Filtering approach for extracting the top k features
 #' @param max_levels_cat_var Remove categorical features with more than a specified number of levels.
 #' Default is 10
-#' @import ggplot2 rlang ReporteRs tidyr FSelector
+#' @import ggplot2 rlang officer tidyr FSelector
 #' @importFrom stats cor fivenum median
 #'
 #' @return Output presentation with Univariate and Bi-variate analysis and plots
@@ -384,12 +384,12 @@ generate_ppt <- function(final_res,n_plots_per_slide = c("1","2"),
 
 
 
-  doc = pptx()
+  doc = read_pptx()
 
   # Slide 1 : Title slide
-  doc <- addSlide(doc, "Title Slide")
-  doc <- addTitle(doc,"Exploratory Analysis Report")
-
+  # doc <- addSlide(doc, "Title Slide")
+  # doc <- addTitle(doc,"Exploratory Analysis Report")
+  #
   # Add section labels
   if(length(final_res) == 2) {
     section_labels = c("Univariate Analysis","Bi-variate analysis")
@@ -417,7 +417,7 @@ generate_ppt <- function(final_res,n_plots_per_slide = c("1","2"),
   }
 
 
-  writeDoc(doc, file = output_file_name)
+  print(doc, target = output_file_name)
 
 
 }
@@ -426,30 +426,27 @@ add_slides_from_plot_list <- function(doc,all_plots,all_tables,
                                       n_plots_per_slide, section_label
                                       ) {
 
-  doc <- addSlide(doc, "Section Header")
-  doc <- addParagraph(doc, section_label)
+  doc <- doc %>%
+    add_slide(layout = "Title Only", master = "Office Theme")
+  doc <- doc %>% ph_with_text(type="title",str=section_label)
+  #doc <- addParagraph(doc, section_label)
 
   if(n_plots_per_slide == 1) {
+    iter <- 1
 
     for (i in 1:length(all_plots)) {
 
-      doc <- addSlide(doc, "Two Content")
+      doc <- doc %>%
+        add_slide(layout = "Title and Content", master = "Office Theme")
       title <- paste(section_label,"Slide ", iter, "of", length(all_plots))
-      doc <- addTitle(doc, title, level = 6)
+
+      if( capabilities(what = "png") )
+        doc <- ph_with_gg_at(doc, value = all_plots[[i]],left=0.75,top=1.56,width = 4.73,height=4.95)
+      doc <- doc %>%   ph_with_table_at(all_tables[[i]],left=5.63,top=1.56,width = 3.7,height=2.2)
+      doc <- doc %>% ph_with_text(type="title",str=title)
 
 
-      doc <- addPlot(doc, fun = print, x = all_plots[[i]],
-                     offx = 1, offy = 1.5, width = 6, height = 5,vector.graphic = FALSE,editable = FALSE)
-
-      flex_tbl <- vanilla.table(all_tables[[i]])
-      flex_tbl <- setZebraStyle(flex_tbl, odd = '#eeeeee', even = 'white')
-      flex_tbl[,] <- textProperties( font.style="italic", font.size = 13)
-
-      len_tbl <- ncol(all_tables[[i]])
-      flex_tbl <- setFlexTableWidths( flex_tbl, widths = rep(4/len_tbl,len_tbl))
-      doc <- addFlexTable(doc, flex_tbl, offx = 8,
-                          offy = 1.5, width = 6, height = 4)
-
+      iter <- iter + 1
     }
 
 
@@ -460,40 +457,27 @@ add_slides_from_plot_list <- function(doc,all_plots,all_tables,
     iter <- 1
     for (i in seq(1,length(all_plots),2)) {
 
-      doc <- addSlide(doc, "Two Content")
+      doc <- doc %>%
+        add_slide(layout = "Title and Content", master = "Office Theme")
       title <- paste(section_label,"Slide ", iter, "of", ceiling(length(all_plots)/2))
-      doc <- addTitle(doc, title, level = 6)
+      doc <- doc %>% ph_with_text(type="title",str=title)
 
 
-      doc <- addPlot(doc, fun = print, x = all_plots[[i]],
-                     offx = 1, offy = 1.5, width = 5.5, height = 3.5,vector.graphic = FALSE,editable = FALSE)
+      if( capabilities(what = "png") )
+        doc <- ph_with_gg_at(doc, value = all_plots[[i]],left=0.86,top=1.4,width = 4.3,height=3.69)
+
       if (i != length(all_plots)) {
-        doc <- addPlot(doc, fun = print, x = all_plots[[i+1]],
-                       offx = 7, offy = 1.5, width = 5.5, height = 3.5,vector.graphic = FALSE,editable = FALSE)
+        if( capabilities(what = "png") )
+          doc <- ph_with_gg_at(doc, value = all_plots[[i+1]],left=5.31,top=1.4,width = 4.3,height=3.69)
 
       }
 
 
-      flex_tbl <- vanilla.table(all_tables[[i]])
-      flex_tbl <- setZebraStyle(flex_tbl, odd = '#eeeeee', even = 'white')
-      flex_tbl[,] <- textProperties( font.style="italic", font.size = 13)
-
-      len_tbl <- ncol(all_tables[[i]])
-      flex_tbl <- setFlexTableWidths( flex_tbl, widths = rep(4/len_tbl,len_tbl))
-      doc <- addFlexTable(doc, flex_tbl, offx = 2,
-                          offy = 5.5, width = 10, height = 4)
-
+      doc <- doc %>%  ph_with_table_at(all_tables[[i]],left=0.86,top=5.25,width = 4.3,height=1.67)
 
       if (i != length(all_plots)) {
 
-        flex_tbl <- vanilla.table(all_tables[[i+1]])
-        flex_tbl <- setZebraStyle(flex_tbl, odd = '#eeeeee', even = 'white')
-        flex_tbl[,] <- textProperties( font.style="italic", font.size = 14)
-
-        len_tbl <- ncol(all_tables[[i+1]])
-        flex_tbl <- setFlexTableWidths( flex_tbl, widths = rep(4/len_tbl,len_tbl))
-        doc <- addFlexTable(doc, flex_tbl, offx = 8,
-                            offy = 5.5, width = 10, height = 4)
+        doc <- doc %>%  ph_with_table_at(all_tables[[i+1]],left=5.31,top=5.25,width = 4.3,height=1.67)
 
       }
       iter <- iter + 1

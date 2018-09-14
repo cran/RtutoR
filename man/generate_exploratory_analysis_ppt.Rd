@@ -5,10 +5,11 @@
 \title{Generate Exploratory Analysis Report}
 \usage{
 generate_exploratory_analysis_ppt(df, target_var, output_file_name,
-  n_plots_per_slide = 2, plot_theme = "ggthemes::theme_fivethirtyeight()",
-  group_names = NULL, top_k_features = NULL,
-  f_screen_model = c("chi.squared", "information.gain", "gain.ratio",
-  "symmetrical.uncertainty"), max_levels_cat_var = 10)
+  n_plots_per_slide = 2,
+  plot_theme = "ggthemes::theme_fivethirtyeight()", group_names = NULL,
+  top_k_features = NULL, f_screen_model = c("chi.squared",
+  "information.gain", "gain.ratio", "symmetrical.uncertainty"),
+  max_levels_cat_var = 10)
 }
 \arguments{
 \item{df}{Dataframe object for exploratory analysis}
